@@ -12,7 +12,7 @@ const argv = cli({
 	],
 
 	// 里面定义--options 参数
-	flags: {
+	flags: {  
 		// Parses `--time` as a string
 	}
 })
