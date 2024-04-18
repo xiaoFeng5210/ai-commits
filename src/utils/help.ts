@@ -6,7 +6,5 @@ import {execSync} from "node:child_process";
  */
 export function getFilesChangedInGitAdd() {
 	const gitDiff = execSync("git diff --cached --name-only", { encoding: "utf-8" });
-	const files = gitDiff.split("\n");
-	console.log(files);
-	return files
+	return gitDiff.split("\n")
 }
