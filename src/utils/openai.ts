@@ -1,10 +1,7 @@
 import https from "https"
 import type { ClientRequest, IncomingMessage } from 'http';
-// import type {
-// 	CreateChatCompletionRequestMessage,
-// 	CreateChatCompletionResponse,
-// } from 'openai';
 import CreateChatCompletionRequestMessage from "openai"
+import {createChatRequest} from "./prompt";
 import {getOpenAIkey} from "./help";
 
 let OPENAI_API_KEY;
@@ -46,31 +43,21 @@ const callOpenAI = async (json: CreateChatCompletionRequestMessage) => {
 	  })
 }
 
-const createChatCompletion = async () => {
+/**
+ * 
+ * @param options {diff: string}
+ */
+const createChatCompletion = async (options: {diff: string}) => {
 	OPENAI_API_KEY = getOpenAIkey()
+	const {diff} = options
 	console.log(OPENAI_API_KEY)
 	if (!OPENAI_API_KEY) {
 		throw new Error('No OpenAI API key found');
 	}
 	// TODO: prompt 信息先随机一个
-	const json: CreateChatCompletionRequestMessage = {
-		model: 'gpt-3.5-turbo',
-		// model: 'gpt-4-1106-preview',
-		messages: [
-			{ role: 'system', content: 'You are a helpful assistant.' },
-			{ role: 'user', content: '我想知道幸福的生活是什么样的' },
-		],
-		temperature: 0.7,
-		top_p: 1,
-		frequency_penalty: 0,
-		presence_penalty: 0,
-		max_tokens: 200,
-		stream: false,
-		// 建议的答案数量
-		n: 1,
-	};
-	
+	const json: CreateChatCompletionRequestMessage = createChatRequest(diff) as any
 	const res = await callOpenAI(json)
 }
 
-createChatCompletion()
+const diff = "你好，我想知道怎么写一个关于分析要提交代码的prompt"
+createChatCompletion({diff})
