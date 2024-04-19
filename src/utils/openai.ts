@@ -1,14 +1,15 @@
 import https from "https"
 import type { ClientRequest, IncomingMessage } from 'http';
-import type {
-	CreateChatCompletionRequest,
-	CreateChatCompletionResponse,
-} from 'openai';
+// import type {
+// 	CreateChatCompletionRequestMessage,
+// 	CreateChatCompletionResponse,
+// } from 'openai';
+import CreateChatCompletionRequestMessage from "openai"
 import {getOpenAIkey} from "./help";
 
 let OPENAI_API_KEY;
 
-const callOpenAI = async (json: CreateChatCompletionRequest) => {
+const callOpenAI = async (json: CreateChatCompletionRequestMessage) => {
   	new Promise((resolve, reject) => {
 			const postBody = JSON.stringify(json)
 			const request = https.request({
@@ -52,7 +53,7 @@ const createChatCompletion = async () => {
 		throw new Error('No OpenAI API key found');
 	}
 	// TODO: prompt 信息先随机一个
-	const json: CreateChatCompletionRequest = {
+	const json: CreateChatCompletionRequestMessage = {
 		model: 'gpt-3.5-turbo',
 		// model: 'gpt-4-1106-preview',
 		messages: [
