@@ -20,7 +20,6 @@ const argv = cli({
 	}
 })
 
-intro('开始进行AI分析')
 aicommits();
 
 
