@@ -6,8 +6,8 @@ import {getOpenAIkey} from "./help";
 
 let OPENAI_API_KEY;
 
-const callOpenAI = async (json: CreateChatCompletionRequestMessage) => {
-  	new Promise((resolve, reject) => {
+const callOpenAI = async (json: CreateChatCompletionRequestMessage): Promise<{data: string, request: ClientRequest}> => {
+  	return new Promise((resolve, reject) => {
 			const postBody = JSON.stringify(json)
 			const request = https.request({
 				port: 443,
@@ -24,7 +24,6 @@ const callOpenAI = async (json: CreateChatCompletionRequestMessage) => {
 				const res: Buffer[] = []
 				response.on('data', chunk => res.push(chunk))
 				response.on('end', () => {
-					console.log(Buffer.concat(res).toString())
 					resolve({
 						request,
 						data: Buffer.concat(res).toString()
@@ -45,19 +44,24 @@ const callOpenAI = async (json: CreateChatCompletionRequestMessage) => {
 
 /**
  * 
- * @param options {diff: string}
+ * @param diff {string}
+ * @param options {{locale: string, maxLength: number}}
  */
-const createChatCompletion = async (options: {diff: string}) => {
+export const createChatCompletion = async (diff: string, options: {locale: string, maxLength: number}) => {
 	OPENAI_API_KEY = getOpenAIkey()
-	const {diff} = options
+	const {locale, maxLength} = options
 	console.log(OPENAI_API_KEY)
 	if (!OPENAI_API_KEY) {
 		throw new Error('No OpenAI API key found');
 	}
 	// TODO: prompt 信息先随机一个
-	const json: CreateChatCompletionRequestMessage = createChatRequest(diff) as any
-	const res = await callOpenAI(json)
+	const json: CreateChatCompletionRequestMessage = createChatRequest(diff, {locale, maxLength}) as any
+	const res = await callOpenAI(json).catch(err => {
+		throw new Error(`Failed to call OpenAI: ${err}`)
+	})
+	
+	return res.data
 }
 
-const diff = "你好，我想知道怎么写一个关于分析要提交代码的prompt"
-createChatCompletion({diff})
+// const diff = "1 + 1 等于几？"
+// createChatCompletion({diff})
