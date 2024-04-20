@@ -26,6 +26,10 @@ const commitTypes: Record<CommitType, string> = {
 	)}`,
 }
 
+const strengthPrompt = () => `
+I hope that the information content of git commit should be combined with the context of the changed content and the programming language used to objectively and accurately explain the content of the commit information.
+`
+
 const specifyCommitFormat = (type: CommitType) =>
 	`The output response must be in format:\n${commitTypeFormats[type]}`;
 
@@ -45,6 +49,7 @@ export const generatePrompt = (locale: string, maxLength: number, type = "conven
 		`Commit message must be a maximum of ${maxLength} characters.`,
 		'Exclude anything unnecessary such as translation. Your entire response will be passed directly into git commit.',
 		commitTypes[type],
+		strengthPrompt(),
 		specifyCommitFormat(type as CommitType),
 	].filter(Boolean).join('\n');
 }

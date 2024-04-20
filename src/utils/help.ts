@@ -18,3 +18,12 @@ export function getOpenAIkey() {
 	const content = fs.readFileSync(filePath, { encoding: "utf-8" });
 	return content.split("=")[1].replace("\n", "")
 }
+
+interface Staged {
+	filename: string,
+	content: string
+}
+
+export function allStagedFiles2Message(staged: Staged[]) {
+	return staged.map(item => item.content).join('\n');
+}

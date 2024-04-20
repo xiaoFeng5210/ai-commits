@@ -1,4 +1,4 @@
-import {getFilesChangedInGitAdd} from "../utils/help"
+import {allStagedFiles2Message, getFilesChangedInGitAdd} from "../utils/help"
 import { confirm, text, intro, outro, spinner} from '@clack/prompts';
 import { black, dim, green, red, bgCyan, bgMagenta } from 'kolorist';
 import {createChatCompletion} from "../utils/openai"
@@ -23,7 +23,8 @@ export default async () => {
 	}
 	let s = spinner();
 	s.start(bgMagenta('AI is analyzing your changes'));
-	const message = await createChatCompletion(staged[0].content, {locale: "zh-CN", maxLength: 200}).catch(err => {
+	const content = allStagedFiles2Message(staged);
+	const message = await createChatCompletion(content, {locale: "zh-CN", maxLength: 200}).catch(err => {
 		throw new Error(`Failed to call createChatCompletion: ${err}`)
 	})
 	const commitMessage = JSON.parse(message).choices[0].message.content
