@@ -27,6 +27,10 @@ export default async () => {
 	const message = await createChatCompletion(content, {locale: "zh-CN", maxLength: 200}).catch(err => {
 		throw new Error(`Failed to call createChatCompletion: ${err}`)
 	})
+	const messageParse = JSON.parse(message)
+	if (messageParse?.choices?.length === 0) {
+		throw new Error(messageParse)
+	}
 	const commitMessage = JSON.parse(message).choices[0].message.content
 	s.stop()
 	outro(dim(commitMessage))
