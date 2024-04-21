@@ -3,6 +3,7 @@ import type { ClientRequest, IncomingMessage } from 'http';
 import CreateChatCompletionRequestMessage from "openai"
 import {createChatRequest} from "./prompt";
 import {getOpenAIkey} from "./help";
+import * as process from "node:process";
 
 let OPENAI_API_KEY;
 
@@ -24,10 +25,11 @@ const callOpenAI = async (json: CreateChatCompletionRequestMessage): Promise<{da
 				const res: Buffer[] = []
 				response.on('data', chunk => res.push(chunk))
 				response.on('end', () => {
+					const data = Buffer.concat(res).toString()
 					resolve({
 						request,
 						response,
-						data: Buffer.concat(res).toString()
+						data
 					})
 				})
 			}
@@ -58,6 +60,9 @@ export const createChatCompletion = async (diff: string, options: {locale: strin
 	const res = await callOpenAI(json).catch(err => {
 		throw new Error(`Failed to call OpenAI: ${err}`)
 	})
-	
+	const parseResult = JSON.parse(res.data)
+	if ("error" in parseResult) {
+		throw new Error(`OpenAI error: ${parseResult.error.message}`)
+	}
 	return res.data
 }
